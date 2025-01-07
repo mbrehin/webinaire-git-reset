@@ -17,10 +17,12 @@ export class Branch {
     headTag,
     startAt,
     tagPosition = "bottom",
+    hideTag = false,
   }) {
     this.graph = graph;
     this.label = label;
     this.commits = [];
+    this.hideTag = hideTag;
 
     this.commits.last = function last() {
       return this[this.length - 1];
@@ -71,7 +73,9 @@ export class Branch {
    */
   draw() {
     this.commits.forEach((commit) => commit.draw());
-    this.branchTag.draw();
+    if (!this.hideTag) {
+      this.branchTag.draw();
+    }
     if (this.headTag) {
       this.headTag.draw();
     }
@@ -114,7 +118,9 @@ export class Branch {
       startCommit
     );
 
-    this.branchTag.refresh({}).move();
+    if (!this.hideTag) {
+      this.branchTag.refresh({}).move();
+    }
     if (this.headTag) {
       this.headTag.refresh().move();
     }
@@ -162,8 +168,12 @@ export class Branch {
           redrawingStartCommit
         );
       if (refreshHead) {
-        this.branchTag.refresh({}).move();
-        this.headTag.refresh().move();
+        if (!this.hideTag) {
+          this.branchTag.refresh({}).move();
+        }
+        if (this.headTag) {
+          this.headTag.refresh().move();
+        }
       }
     }
   }
@@ -197,12 +207,14 @@ export class Branch {
       return;
     }
 
-    const branchTag = this.branchTag || this.findCommit(headTag);
+    const branchTag =
+      (!this.hideTag && this.branchTag) || this.findCommit(headTag);
     if (branchTag) {
       this.headTag = new HeadTag({
         branch: this,
         origin: branchTag,
         position: this.tagPosition,
+        detached: this.hideTag,
       });
     }
   }

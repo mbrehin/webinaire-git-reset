@@ -1,6 +1,6 @@
 ---
 # You can also start simply with 'default'
-theme: seriph
+theme: ./theme
 # random image from a curated Unsplash collection by Anthony
 # like them? see https://unsplash.com/collections/94734566/slidev
 background: /images/git-scm-icon.svg
@@ -48,193 +48,279 @@ Militant pour un [numérique acceptable](https://louisderrac.com/numerique-accep
 layout: center
 ---
 
+# Rappel des concepts utiles
+
+Chaîne de commits, *HEAD* et étiquettes de branches
+
+---
+
+# Git, précurseur de la block-chain ?
+
+L’identité de chaque commit dépend de son ou ses parents.
+
+<GitGraph graph="commits-1" />
+
+---
+
+# Un fléchage à l’inverse de la chronologie
+
+On trouve parfois une représentation fléchée :
+
+```mermaid
+flowchart RL
+  id1([cb959])
+  id2([d27c3])
+  id3([b24dc])
+  id4([a3c8d])
+  id5([f30ab])
+
+  id1 --> id2
+  id2 --> id3
+  id3 --> id4
+  id4 --> id5
+```
+
+---
+
+# HEAD, « vous êtes ici »
+
+Référence notre position actuelle. Détermine d’où part le prochain commit.
+
+<GitGraph graph="commits-2" />
+
+---
+
+# Des étiquettes plus que des vraies "branches"
+
+Ce qu’on appelle "branche" n’est autre qu’**un pointeur** sur un commit en bout de chaîne.
+
+HEAD pointe généralement sur une étiquette de branche. C’est alors cette dernière qui bougera en cas de modification de l’historique.
+
+<GitGraph graph="commits-3" />
+
+
+---
+layout: center
+---
+
 # Mille et une façon de "défaire"
+
+---
+
+# Annuler, défaire, corriger
+
+La commande reset est un allié précieux dans de nombreuses situations :
+
+<v-clicks>
+
+1. annuler les X derniers commits, les **retirer de l'historique** (sans garder leurs modifications) ;
+2. annuler et **continuer à modifier** ce que contenait le dernier commit ;
+3. ajouter un fichier ou des modifications au dernier commit ;
+4. défaire et refaire un commit par sujet à partir d’un commit « fourre-tout » (non [atomique](/fr/glossaire/commit-atomique/)) ;
+5. revoir un message d’un commit mal rédigé ;
+6. regrouper les X derniers commits pour n’en faire qu’un ;
+7. repositionner un commit créé sur la mauvaise branche ;
+8. annuler un  _rebase_ ;
+9. annuler une fusion (_merge_) ;
+10. annuler un _pull_.
+
+</v-clicks>
+
+<v-click>
+
+Je m’arrête ici aux scenarios qui touchent de près ou de loin à la commande *reset*. Les cas de figures possibles sont plus nombreux. Par chance, on a [une série d’articles dédiés à chacun d’eux](https://comprendre-git.com/fr/annuler-defaire-corriger/).
+
+</v-click>
+
+---
+layout: center
+---
+
+# Mais on va péter notre historique si on se trompe 😱 !
+
+Et on va perdre nos commits, notre travail ! Nos collègues vont nous detester, on va se faire virer…
+
+---
+
+# Respire un coup, ça n’arrivera pas…
+
+(enfin j’espère pour toi 😉)
+
+<v-clicks>
+
+Tout ce qui est commité avec Git **existe toujours** malgré l’usage de *reset*. 
+
+La commande ne fait que **déréférencer**. Elle ne détruit pas les objets. 
+
+Ils existent encore dans ton dépôt local mais **n’appartiennent plus à aucun historique nommé**.
+
+La destruction réelle est faite plus tard par le *garbage collector*. 
+
+En gros, tu as un mois pour récupérer ton travail.
+
+Le ***reflog*** est ton ami ! 
+
+```bash
+git reflog -10 branche-courante
+```
+
+</v-clicks>
+
+---
+layout: center
+---
+
+# Maintenant que tu es (un peu) rassuré·e, <br/>entrons dans le vif du sujet !
+
 
 ---
 transition: fade-out
 ---
 
-# Ne confonds pas `rebase` et `merge`
+# 1. Annuler les X derniers commits, les **retirer de l'historique**
 
-Chaque commande existe pour servir une fonction donnée.
+On veut donc **supprimer** un ou plusieurs commits.
 
-Pour simplifier :
-
-- `merge` marque l'intégration de travaux d'une branche à une autre ;
-- `rebase` permet de mettre à jour une branche, parfois "au dessus" d'une autre.
-
-Pour en savoir plus, on a [un article détaillant tout ça](https://comprendre-git.com/fr/commandes/bien-utiliser-git-merge-et-rebase/) !
-
----
-
-# À quoi sert la commande `rebase` ?
-
-<v-clicks>
-
-- **Supprimer** des commits
-- **Ré-ordonner** des commits
-- **Fusionner** des commits
-- **Découper** des commits
-- **Reformuler des messages** de commits
-- **Ajouter des modifications ou des fichiers** à des commits
-- **Déplacer des portions d'historique** (intervalle de commits explicite)
-- Bref, **tout ce qu’on peut souhaiter** !
-
-</v-clicks>
-
----
-
-# Pourquoi s'embêter avec ce type de manipulation ?
-
-Pour éviter d'avoir un historique pourri, et donc :
-
-<v-clicks>
-
-- **Faciliter la lecture du *log***
-  - Plus concis, sans commits superflus / réciproques
-  - Mieux séquencé
-  - Mieux rédigé
-  - Sujets mieux regroupés
-- **Faciliter la récupération de thèmes**
-  - *Cherry-picking*
-  - *Merge / rebase* d’un intervalle continu de commits
-  - Récupération d’une branche sans dépendance historique superflue
-  - Réduit les risques de conflits hors-sujet
-- Avoir l’air de super-héros 🦸‍♀️
-  - « Elle réussit toujours du premier coup, et dans l’ordre en plus ! »
-
-</v-clicks>
-
----
-
-# Syntaxes
-
-Beaucoup d'interfaces graphiques savent gérer les rebases classiques, mais rarement des situations complexes.
-Seul le terminal permet d'exploiter tout son potentiel, mais il faut retenir la syntaxe.
+Préfère le mode `--keep` au `--hard` qu’on voit partout. Il t’offre une sécurité supplémentaire pour ne pas perdre ton travail non commité.
 
 ```bash
-git rebase nouvelle-base [branche-qui-rebase]
+# "Suppression" du dernier commit
+git reset --keep HEAD~1
+# "Suppression" des 3 derniers commits
+git reset --keep HEAD~3
 ```
 
-Par défaut, rebase le HEAD sur la nouvelle base.
-
-On peut préciser l'intervalle explicitement, mais la syntaxe est velue :
-
-```bash
-git rebase --onto nouvelle-base commit-initial-exclu branche-qui-rebase
-```
-
-Et puis il y a pas mal d'options bien utiles : `--interactive` / `-i`, `--rebase-merges` / `-r`…
-
-Regarde aussi [notre fiche du glossaire dédiée au rebase](https://comprendre-git.com/fr/glossaire/git-rebase-c-est-quoi/).
-
+Evidemment (et ça vaudra pour tout ce qui suit), tu vérifies ton historique après opération, hein !
 
 ---
 
-# Ça fonctionne comment ?
+# 2. Annuler et **continuer à modifier** le dernier commit
 
-Le rebase **rejoue chaque commit** sur la nouvelle base, ce qui revient à faire une série de *cherry-picks*.
-
-Dont risques de conflits, comme d’habitude.
-
-S’il y en a, rebase vous donne la main pour le résoudre avant de continuer.
-
-Quand rebase vous donne la main et que vous avez terminé :
+On change pour le mode le plus doux, le `--soft`. Ça ne fait que bouger nos pointeurs dans l’historique local, sans toucher aux fichiers dans le *working directory* et le *stage*.
 
 ```bash
-git rebase --continue
-git rebase --abort
-git rebase --skip
+git reset --soft HEAD~1
+```
+
+Double vérifications ici : le *log* et le *status* !
+
+---
+
+# 3. Ajouter un fichier ou des modifications au dernier commit
+
+Avec ce qu’on vient de voir, tu peux être tenté·e de faire un `git reset --soft HEAD~1`, d’ajouter tes modifs et de commiter. 
+
+Ça fonctionne à merveille, mais tu as encore plus simple. 
+
+Je triche un peu car *reset* est utilisé implicitement :
+
+```bash
+# Ajout de tes modifs et fichiers au stage (git add …), puis :
+git commit --amend --no-edit
+```
+
+Même vérifs qu’avant : le *log* et le *status* !
+
+---
+
+# 4. Défaire et refaire un commit par sujet à partir d’un commit « fourre-tout »
+
+Idéalement, on vise à produire des commits qui détiennent **des ensembles cohérents de modifications**.
+
+Même procédure que précédemment : on annule en gardant les modifs, et on "découpe" en ajoutant au stage les modifs "triées" avant de commiter. 
+
+```bash
+# Le mode juste après "soft" est plus adapté ici :
+git reset --mixed HEAD~1
+# Vérification 
+git status
+# Ajout d’un premier lot
+git add …
+# Premier commit
+git commit …
+# Et ainsi de suite : git add … + git commit …
 ```
 
 ---
 
-# Visuellement, ça donne ça !
+#  5. Revoir un message d’un commit mal rédigé
 
-<GitGraph graph="rebase" />
+On peut le faire en 2 temps : 
 
+- annuler le commit en gardant son contenu (mode `--soft`) ;
+- recommiter avec un nouveau message.
+
+Mais en vrai, il y a plus simple :
+
+```bash
+git commit --amend -m 'Mon nouveau message de commit'
+```
+
+**Attention à ce que le *stage* soit vide**, sans quoi ça ajoutera les modifs au commit en plus de changer son message.
 
 ---
 
-# Défaire un rebase, c'est facile !
+# 6. Regrouper les X derniers commits pour n’en faire qu’un
 
-Le rebase n'est pas déstructif, on peut donc faire revenir l'étiquette de branche à sa position d'avant, en 1 petite commande :
+Décidemment, le `reset --soft` est bien pratique. 
 
-```bash
-git reset --keep [branche-courante]@{1}
-```
-
-Attention à vérifier avant ça que tu es sur la bonne branche (le *reflog* est ton ami).
-
-<GitGraph graph="cancel-rebase" />
-
-
---- 
-
-# Ajouter des fichiers ou correction à un commit
-
-Avec le bon alias, il suffit de 
-
-- ajouter les fichiers/modification au stage (un `git add …` quoi !)
-- de lancer l'alias : `git commit autofixup le-commit-à-corriger`
-
-Pour configurer l'alias en question : 
+Il nous sert à défaire les X commits en gardant leurs modifs dans le *stage*. On a alors plus qu’à commiter.
 
 ```bash
-git config --global alias.autofixup '!git commit --fixup $1 && git rebase --autosquash --interactive --rebase-merges $1~1 && echo "autofixup finished"'
+git reset --soft HEAD~4
+git commit -m 'Message des commits groupés'
 ```
-
-[Cet article](https://comprendre-git.com/fr/astuces/git-protip-autofixup/) te donne tous les détails.
 
 ---
 
-# Ça marche aussi avec l'édition des anciens messages
+# 7. Repositionner un commit créé sur la mauvaise branche
 
-On a déjà `commit --amend` pour le dernier commit en date, 
+Je ne traite ici que d’une situation particulière : on pensait avoir créé une branche à notre emplacement actuel et on a commité. 
 
-et pour les autres, on fera encore avec un alias 
+Sauf que la branche n’a pas été créée. On a donc fait "avancer" l’autre étiquette de branche.
 
-```bash
-git autoreword le-commit-à-corriger
-```
+On veut alors :
 
-Ensuite, on édite le message ouvert dans notre éditeur, on ferme, et c'est tout bon !
-
-Pour configurer l'alias : 
+- créer l'étiquette de notre branche à notre emplacement actuel ;
+- ramener l’autre étiquette un cran en arrière.
 
 ```bash
-git config --global alias.autoreword '!git commit --fixup reword:$1 && GIT_EDITOR=true && git rebase --autosquash --interactive --rebase-merges $1~1 && echo "autoreword finished"'
+# On crée l'étiquette à l'emplacement du commmit actuel
+git branch feat/zobi
+# On ramène la branche actuelle (par exemple "main") un cran en arrière.
+# Là j'utilise le mode "soft" pour garder les éventuelles modifs en cours 
+# dans le stage et le working directory
+git reset --soft HEAD~1
+# Je me remets avec mes modifs sur la "bonne" branche
+git switch feat/zobi
+# Je vérifie mon historique/log
 ```
-
-Là aussi, on a [un article qui t'explique tout](https://comprendre-git.com/fr/astuces/git-protip-autoreword/) !
-
 
 ---
 
-# Pull en mode rebase
+# 8. Annuler un  _rebase_, un *merge*, un *pull*, un *reset*…
 
-Le rebase s'invite même lors de la récupération du travail distant.
+Une commande pour les dominer tous 🦹 !!
 
-Pourquoi ? Pour t'éviter de pourrir ton historique en retranscrivant chaque nouveauté sur ta branche sous forme de fusion.
+La chance qu’on a ici, c’est qu’une seule commande permet de défaire aussi bien une fusion qu’un *rebase* ou un *pull*.
 
-Ça ne demande qu'une toute petite configuration.
-
-**Mais attention**, tout le monde doit l'avoir !
+**Attention** : ça ne fonctionne que si on est sur la branche qui vient de bouger ! On vérifie donc avant.
 
 ```bash
-git config --global pull.rebase merges
+git reset --keep branche-courante@{1}
 ```
 
-Ça aussi, c'est détailé dans [un article](https://comprendre-git.com/fr/glossaire/git-rebase-c-est-quoi/#pull-%2B-rebase-%3D-%E2%9D%A4%EF%B8%8F).
+De manière générale, suite à toute "mauvaise" opération modifiant l’historique, cette commande permettra d’annuler l’opération.
+
+On peut donc même **annuler nos annulations**, nos *reset* grâce à ça !
 
 ---
 layout: end
 ---
 
-
 # Merci
 
-Besoin d'une formation, d'être accompagné ?
+Besoin d'une [formation](https://comprendre-git.com/fr/formation/), d'être accompagné ?
 Il suffit de demander !
 
 <a href="mailto:contact@comprendre-git.com">contact@comprendre-git.com</a>

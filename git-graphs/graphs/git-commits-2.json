@@ -1,0 +1,81 @@
+{
+  "legend": " ",
+  "comments": " ",
+  "branches": [
+    {
+      "name": {
+        "value": "main",
+        "position": "f30ab"
+      },
+      "hideTag": true,
+      "commits": ["f30ab"],
+      "head": "f30ab"
+    }
+  ],
+  "steps": [
+    {
+      "legend": " ",
+      "comments": " ",
+      "actions": [
+        {
+          "method": "addCommits",
+          "commits": ["a3c8d"],
+          "branch": "main"
+        },
+        {
+          "method": "moveHeadTag",
+          "branch": "main",
+          "target": "a3c8d"
+        }
+      ]
+    },
+    {
+      "legend": " ",
+      "comments": " ",
+      "actions": [
+        {
+          "method": "addCommits",
+          "commits": ["b24dc"],
+          "branch": "main"
+        },
+        {
+          "method": "moveHeadTag",
+          "branch": "main",
+          "target": "b24dc"
+        }
+      ]
+    },
+    {
+      "legend": " ",
+      "comments": " ",
+      "actions": [
+        {
+          "method": "addCommits",
+          "commits": ["d27c3"],
+          "branch": "main"
+        },
+        {
+          "method": "moveHeadTag",
+          "branch": "main",
+          "target": "d27c3"
+        }
+      ]
+    },
+    {
+      "legend": " ",
+      "comments": " ",
+      "actions": [
+        {
+          "method": "addCommits",
+          "commits": ["cb959"],
+          "branch": "main"
+        },
+        {
+          "method": "moveHeadTag",
+          "branch": "main",
+          "target": "cb959"
+        }
+      ]
+    }
+  ]
+}

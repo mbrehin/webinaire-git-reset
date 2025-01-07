@@ -252,7 +252,7 @@ export class MergeCommit extends Block {
 }
 
 export class HeadTag extends Block {
-  constructor({ branch, origin, position = "bottom" }) {
+  constructor({ branch, detached = false, origin, position = "bottom" }) {
     super({
       branch,
       kind: "head",
@@ -262,7 +262,10 @@ export class HeadTag extends Block {
       position,
     });
     this.x = origin.x;
-    this.y = position === "top" ? branch.yPrevious() : branch.yNext({});
+    this.y =
+      position === "top"
+        ? branch.yPrevious()
+        : branch.yNext(detached ? { forcedY: branch.y } : {});
   }
 
   /**

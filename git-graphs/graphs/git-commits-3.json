@@ -1,0 +1,96 @@
+{
+  "legend": " ",
+  "comments": " ",
+  "branches": [
+    {
+      "name": {
+        "value": "main",
+        "position": "f30ab"
+      },
+      "commits": ["f30ab"],
+      "head": "f30ab"
+    }
+  ],
+  "steps": [
+    {
+      "legend": "git commit -am 'First commit'",
+      "comments": "Création d’une série de commits",
+      "actions": [
+        {
+          "method": "addCommits",
+          "commits": ["a3c8d"],
+          "branch": "main"
+        },
+        {
+          "method": "moveBranchTag",
+          "branch": "main",
+          "target": "a3c8d"
+        },
+        {
+          "method": "moveHeadTag",
+          "branch": "main"
+        }
+      ]
+    },
+    {
+      "legend": "git commit -am 'Second commit'",
+      "comments": " ",
+      "actions": [
+        {
+          "method": "addCommits",
+          "commits": ["b24dc"],
+          "branch": "main"
+        },
+        {
+          "method": "moveBranchTag",
+          "branch": "main",
+          "target": "b24dc"
+        },
+        {
+          "method": "moveHeadTag",
+          "branch": "main"
+        }
+      ]
+    },
+    {
+      "legend": "git commit -am 'Third commit'",
+      "comments": " ",
+      "actions": [
+        {
+          "method": "addCommits",
+          "commits": ["d27c3"],
+          "branch": "main"
+        },
+        {
+          "method": "moveBranchTag",
+          "branch": "main",
+          "target": "d27c3"
+        },
+        {
+          "method": "moveHeadTag",
+          "branch": "main"
+        }
+      ]
+    },
+    {
+      "legend": "git commit -am 'Fourth commit'",
+      "comments": " ",
+      "actions": [
+        {
+          "method": "addCommits",
+          "commits": ["cb959"],
+          "branch": "main"
+        },
+        {
+          "method": "moveBranchTag",
+          "branch": "main",
+          "target": "cb959"
+        },
+        {
+          "method": "moveHeadTag",
+          "branch": "main"
+        }
+      ]
+    }
+  ]
+}

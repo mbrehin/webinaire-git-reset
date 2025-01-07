@@ -68,6 +68,9 @@ export class GitGraph {
 
     // Register branches
     this.branches = [];
+    if (!branches) {
+      throw new Error("At least one branch must be defined");
+    }
     branches.forEach((branch) => this.addBranch(branch));
 
     this.initialState = { branches, legend, comments };
@@ -93,6 +96,7 @@ export class GitGraph {
       commits: branch.commits,
       branchTag: branch.name.position,
       headTag: branch.head,
+      hideTag: branch.hideTag,
       startAt: branch.startAt,
       tagPosition: branch.tagPosition,
     });
@@ -494,7 +498,9 @@ export class GitGraph {
       ? this.findBranch(targetBranch).findCommit(target)
       : source.findCommit(target);
     source.branchTag.refresh({ origin, tagPosition, forceY });
-    source.branchTag.move();
+    if (!source.hideTag) {
+      source.branchTag.move();
+    }
   }
 
   /**
@@ -505,6 +511,8 @@ export class GitGraph {
    * @param  {String} options.tagPosition force/override position
    */
   moveHeadTag({ branch, target = null, tagPosition = null }) {
+    if (!this.headTag) return;
+
     const source = this.findBranch(branch);
     // Update current branch if changed
     if (this.headTag.branch !== source) {
