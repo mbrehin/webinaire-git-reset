@@ -19,7 +19,7 @@ transition: slide-left
 # enable MDC Syntax: https://sli.dev/features/mdc
 mdc: true
 # Enable PDF generation
-download: true
+# download: true
 ---
 
 # Savoir défaire et refaire <br/> avec _reset_
