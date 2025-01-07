@@ -8,6 +8,7 @@ const { graph, height, viewBox, width } = defineProps([
   "viewBox",
   "width",
 ]);
+
 const svg = ref(null);
 
 function nextStep() {
@@ -19,10 +20,11 @@ function resetGraph() {
 }
 
 onMounted(async () => {
-  console.log(`Loading git-${graph} graph…`);
+  console.debug(`Loading git-${graph} graph…`);
   const data = await import(`../git-graphs/graphs/git-${graph}.json`);
 
-  const container = document.getElementById(graph).parentElement;
+  // Find "page" element that is displayed/hidden
+  const container = document.getElementById(graph).parentElement.parentElement;
 
   if (container.getBoundingClientRect().width === 0) {
     const observer = new MutationObserver(() => {

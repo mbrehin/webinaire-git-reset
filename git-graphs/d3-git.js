@@ -33,6 +33,7 @@ export function initializeD3GitGraph({
 
   graph.draw();
 
+  console.debug("Graph", containerId, "loaded");
   return graph;
 }
 
