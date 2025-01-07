@@ -166,12 +166,22 @@ git reflog -10 branche-courante
 
 </v-clicks>
 
+--- 
+
+# Masqués mais pas supprimés
+
+Ce qui est perdu peut se retrouver
+
+<GitGraph graph="reset" />
+
+
 ---
 layout: center
 ---
 
 # Maintenant que tu es (un peu) rassuré·e, <br/>entrons dans le vif du sujet !
 
+Pour nous amuser, jouons avec https://learngitbranching.js.org/
 
 ---
 transition: fade-out
